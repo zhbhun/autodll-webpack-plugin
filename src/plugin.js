@@ -77,9 +77,6 @@ class AutoDLLPlugin {
 
     const watchRun = (compiler, callback) => {
       compileIfNeeded(() => webpack(dllConfig))
-        .then(a => {
-          return a;
-        })
         .then(handleStats)
         .then(({ source, stats }) => {
           if (compiler.hooks) {
@@ -141,6 +138,8 @@ class AutoDLLPlugin {
 
       if (compiler.hooks) {
         compiler.hooks.compilation.tap('AutoDllPlugin', compilation => {
+          if (!compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration) return;
+
           compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tap(
             'AutoDllPlugin',
             doCompilation
