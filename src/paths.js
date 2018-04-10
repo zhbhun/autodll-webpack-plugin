@@ -6,7 +6,7 @@ export const cacheDir = findCacheDir({ name: 'autodll-webpack-plugin' });
 export const getManifestPath = hash => bundleName =>
   path.resolve(cacheDir, hash, `${bundleName}.manifest.json`);
 
-export const getInjectPath = ({ publicPath, pluginPath, filename }) => {
+export const getInjectPath = ({ publicPath, pluginPath, filename, timestamp = '' }) => {
   let injectPublicPath = publicPath;
   let injectRestPath = path.posix.join(pluginPath, filename);
   // Ensure that injectPublicPath and injectRestPath can be safely concatinated
@@ -16,5 +16,5 @@ export const getInjectPath = ({ publicPath, pluginPath, filename }) => {
   if (injectRestPath.startsWith('/')) {
     injectRestPath = injectRestPath.substr(1);
   }
-  return injectPublicPath + injectRestPath;
+  return injectPublicPath + injectRestPath + timestamp;
 };

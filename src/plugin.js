@@ -119,7 +119,7 @@ class AutoDLLPlugin {
     }
 
     if (inject) {
-      const getDllEntriesPaths = extension =>
+      const getDllEntriesPaths = (extension, timestamp) =>
         flatMap(memory.getStats().entrypoints, 'assets')
           .filter(filename => filename.endsWith(extension))
           .map(filename =>
@@ -127,28 +127,31 @@ class AutoDLLPlugin {
               publicPath: settings.publicPath,
               pluginPath: settings.path,
               filename,
+              timestamp,
             })
           );
 
       const doCompilation = (htmlPluginData, callback) => {
-        htmlPluginData.assets.js = [...getDllEntriesPaths('.js'), ...htmlPluginData.assets.js];
-        htmlPluginData.assets.css = [...getDllEntriesPaths('.css'), ...htmlPluginData.assets.css];
+        let timestamp = '';
+        if (htmlPluginData.plugin.options.hash) {
+          timestamp = `?${Date.now()}`;
+        }
+        htmlPluginData.assets.js = [...getDllEntriesPaths('.js', timestamp), ...htmlPluginData.assets.js];
+        htmlPluginData.assets.css = [...getDllEntriesPaths('.css', timestamp), ...htmlPluginData.assets.css];
 
         callback(null, htmlPluginData);
       };
 
       if (compiler.hooks) {
         compiler.hooks.afterPlugins.tap('AutoDllPlugin', function() {
-          compiler.hooks.thisCompilation.tap('AutoDllPlugin', function() {
-            compiler.hooks.compilation.tap('AutoDllPlugin', function(compilation) {
-              if (!compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration) {
-                return;
-              }
-              compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
-                'AutoDllPlugin',
-                doCompilation
-              );
-            });
+          compiler.hooks.compilation.tap('AutoDllPlugin', function(compilation) {
+            if (!compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration) {
+              return;
+            }
+            compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
+              'AutoDllPlugin',
+              doCompilation
+            );
           });
         });
       } else {

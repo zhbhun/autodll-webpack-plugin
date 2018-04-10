@@ -31,7 +31,7 @@ const prepare = config => {
 };
 
 export const _createConfig = cacheDir => (settings, rawParentConfig) => {
-  const { hash, filename = [] } = settings;
+  const { hash, filename = [], library = '[name]_[chunkhash]' } = settings;
   const outputPath = path.join(cacheDir, hash);
 
   const parentConfig = mapParentConfig(settings, prepare(rawParentConfig));
@@ -43,12 +43,12 @@ export const _createConfig = cacheDir => (settings, rawParentConfig) => {
       ...(settings.plugins || []),
       new DllPlugin({
         path: path.join(outputPath, '[name].manifest.json'),
-        name: '[name]_[chunkhash]',
+        name: library,
       }),
     ],
     output: {
       filename: filename,
-      library: '[name]_[chunkhash]',
+      library,
     },
   };
 
