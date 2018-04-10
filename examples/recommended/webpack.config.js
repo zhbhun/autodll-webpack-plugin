@@ -1,8 +1,10 @@
 const path = require('path');
 const AutoDllPlugin = require('../../lib');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  // TODO: Add conditional for mode: 'string'
+  
   entry: './src/index.js',
 
   output: {
@@ -12,10 +14,10 @@ module.exports = {
   },
 
   plugins: [
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: './src/index.html',
-    }),
+    // new HtmlWebpackPlugin({
+    //   inject: true,
+    //   template: './src/index.html',
+    // }),
     new AutoDllPlugin({
       debug: true,
       inject: true,
