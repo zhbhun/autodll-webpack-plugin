@@ -89,7 +89,10 @@ class AutoDLLPlugin {
           return memory.sync(settings.hash, stats);
         })
         .then(() => callback())
-        .catch(console.error);
+        .catch((error) => {
+          console.error(error);
+          process.exit(1);
+        });
     };
 
     const emit = (compilation, callback) => {
